@@ -1,3 +1,23 @@
+wmifs (1.3b1-5) unstable; urgency=low
+
+  * Remove annoying "heyho!" debugging printf that happened when one
+    does not have ppp. Fixes: #42297
+
+ -- Ben Gertzfield <che@debian.org>  Sun,  1 Aug 1999 13:51:50 -0700
+
+wmifs (1.3b1-4) unstable; urgency=low
+
+  * Patch from Stephen Pitts to bump static buffer size from 128 to 
+    #defined size (now 512).  Fixes: #41746.
+
+ -- Ben Gertzfield <che@debian.org>  Thu, 22 Jul 1999 07:22:39 -0700
+
+wmifs (1.3b1-3) unstable; urgency=low
+
+  * Bump MAX_STAT_DEVICES to 16. Closes: #37572
+
+ -- Ben Gertzfield <che@debian.org>  Sun,  4 Jul 1999 10:07:03 -0700
+
 wmifs (1.3b1-2) frozen unstable; urgency=low
 
   * Make it so that a make clean does not cause debian/rules clean to
