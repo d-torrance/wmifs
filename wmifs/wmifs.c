@@ -74,6 +74,13 @@
 	----
 	Changes:
 	---
+	02/29/2004 (Tom Marshall, tommy@home.tig-grr.com)
+		* Patch to add a special interface name "auto" for the -i
+		  option. "wmifs -i auto" will automatically select the
+		  first up interface.
+	01/08/2004 (Peter Samuelson, peter@samba-tng.org)
+		* Patch to make make sampling and scrolling intervals
+		  customizable, adds new options -I and -s.
 	01/15/2002 (Matyas Koszik, koszik@debijan.lonyay.edu.hu)
 		* Patch that fixes segfaults on long interface names.
 	08/31/2001 (Davi Leal, davileal@terra.es)
@@ -183,6 +190,7 @@
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 
 #include <X11/Xlib.h>
 #include <X11/xpm.h>
@@ -197,8 +205,11 @@
 #include "wmifs-master.xpm"
 #include "wmifs-mask.xbm"
 
-/* How often to check for new network interface, in seconds */
-#define CHECK_INTERFACE_INTERVAL 5
+/* How often to check for new network interface, in ms */
+#define CHECK_INTERFACE_INTERVAL 5000
+
+/* How often to query the interfaces, in ms */
+#define DEFAULT_SAMPLE_INTERVAL 50
 
   /***********/
  /* Defines */
@@ -233,6 +244,8 @@ char	*active_interface = NULL;
 int		TimerDivisor=60;
 int		WaveForm=0;
 int		LockMode=0;
+int		SampleInt = DEFAULT_SAMPLE_INTERVAL;
+int		ScrollSpeed = CHECK_INTERFACE_INTERVAL;
 
   /*****************/
  /* PPP variables */
@@ -291,8 +304,16 @@ int main(int argc, char *argv[]) {
 				active_interface = argv[i+1];
 				i++;
 				break;
+			case 'I' :
+				SampleInt = atof(argv[i+1]) * 1000;
+				i++;
+				break;
 			case 'l' :
 				LockMode = 1;
+				break;
+			case 's' :
+				ScrollSpeed = atof(argv[i+1]) * 1000;
+				i++;
 				break;
 			case 'v' :
 				printversion();
@@ -356,9 +377,9 @@ void wmifs_routine(int argc, char **argv) {
 	int			stat_online;
 	int			stat_current;
 
-	time_t		starttime;
-	time_t		curtime;
-	time_t		nexttime;
+	unsigned int	curtime;
+	unsigned int	nexttime;
+	struct timeval	tv, tv2;
 
 	long		ipacket, opacket, istat, ostat;
 
@@ -377,9 +398,13 @@ void wmifs_routine(int argc, char **argv) {
 
 	stat_current = 0;
 	if (active_interface) {
+		int isauto = !strcmp(active_interface, "auto");
 		for (i=0; i<stat_online; i++) {
-			if (!strcmp(stat_devices[i].name, active_interface))
+			if ((isauto && stillonline(stat_devices[i].name)) ||
+			    !strcmp(stat_devices[i].name, active_interface)) {
 				stat_current = i;
+				break;
+			}
 		}
 	}
 	
@@ -403,14 +428,16 @@ void wmifs_routine(int argc, char **argv) {
 	AddMouseRegion(0, 5, 5, 35, 15);
 	AddMouseRegion(1, 5, 20, 58, 58);
 
-	starttime = time(0);
-	nexttime = starttime + CHECK_INTERFACE_INTERVAL;
-
+	gettimeofday(&tv2, NULL);
+	nexttime = ScrollSpeed;
 
 	DrawActiveIFS(stat_devices[stat_current].name);
 
 	while (1) {
-		curtime = time(0);
+		gettimeofday(&tv, NULL);
+		curtime = (tv.tv_sec - tv2.tv_sec) * 1000 
+			+ (tv.tv_usec - tv2.tv_usec) / 1000;
+
 		waitpid(0, NULL, WNOHANG);
 
 		for (i=0; i<stat_online; i++) {
@@ -443,7 +470,7 @@ void wmifs_routine(int argc, char **argv) {
 		RedrawWindow();
 		
 		if (curtime >= nexttime) {
-			nexttime=curtime+CHECK_INTERFACE_INTERVAL;
+			nexttime=curtime+ScrollSpeed;
 
 			DrawStats(&stat_devices[stat_current].his[0][0], 54, 40, 5, 58);
 			for (i=0; i<stat_online; i++) {
@@ -520,7 +547,7 @@ void wmifs_routine(int argc, char **argv) {
 			}
 		}
 
-		usleep(50000L);		/* 50 milliseconds */
+		usleep(SampleInt * 1000);
 	}
 }
 
@@ -862,7 +889,9 @@ void usage(void) {
 	fprintf(stderr, "\t-d <display name>\n");
 	fprintf(stderr, "\t-h\tthis help screen\n");
 	fprintf(stderr, "\t-i <interface name>\tdefault (as it appears in /proc/net/route)\n");
+	fprintf(stderr, "\t-I <interval>\tsampling interval, in seconds (default: 0.05)\n");
 	fprintf(stderr, "\t-l\tstarts in lock mode\n");
+	fprintf(stderr, "\t-s <interval>\tscrolling interval, in seconds (default: 5)\n");
 	fprintf(stderr, "\t-v\tprint the version number\n");
 	fprintf(stderr, "\t-w\twaveform load\n");
 	fprintf(stderr, "\n");

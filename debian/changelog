@@ -1,3 +1,45 @@
+wmifs (1.3b1-15) unstable; urgency=low
+
+  * wmifs/wmifs.c: patch from Tom Marshall <tommy@home.tig-grr.com>, adds
+    a special interface name "auto" for the -i option. "wmifs -i auto"
+    will automatically select the first up interface (closes: #204873).
+  * debian/wmifs.1: Document "-i auto" behavior.
+
+ -- Romain Francoise <rfrancoise@debian.org>  Sun, 29 Feb 2004 17:19:12 +0100
+
+wmifs (1.3b1-14) unstable; urgency=low
+
+  * wmifs/wmifs.c: patch from Peter Samuelson <peter@samba-tng.org> to
+    make sampling and scrolling intervals customizable, adds new options
+    -I and -s (closes: #226689).
+  * debian/wmifs.1: Add new options -I and -s.
+
+ -- Romain Francoise <rfrancoise@debian.org>  Thu,  8 Jan 2004 19:21:06 +0100
+
+wmifs (1.3b1-13) unstable; urgency=low
+
+  * The "Stepping up" release.
+  * New maintainer.
+  * debian/control: 
+    + Update maintainer contact info.
+    + Add Recommends on wmaker.
+    + Add Build-Depends on cdbs.
+  * debian/copyright: Update maintainer information.
+
+ -- Romain Francoise <rfrancoise@debian.org>  Fri,  5 Dec 2003 20:17:25 +0100
+
+wmifs (1.3b1-12) unstable; urgency=low
+
+  * The "Why hasn't anyone taken over wmifs yet?" release.
+  * debian/changelog: recode as UTF-8.
+  * debian/control:
+    + build-depend on cdbs, bump debhelper to (>= 4.1.0).
+    + bump Standards-Version to 3.6.1.0.
+  * debian/compat: use debhelper 4.
+  * debian/rules: switch to cdbs.
+
+ -- Jordi Mallach <jordi@debian.org>  Tue, 25 Nov 2003 17:20:41 +0100
+
 wmifs (1.3b1-11) unstable; urgency=low
 
   * debian/changelog: removed emacs stuff.
@@ -45,7 +87,7 @@ wmifs (1.3b1-7) unstable; urgency=low
   * wmifs/wmifs.c: added a new command line argument, -l, which starts
     wmifs in "Lock Mode". With it, if you specify an interface with -i
     but it's not up, wmifs won't try to fall back to another existing
-    interface. Thanks to Jorge García for the help. (closes: #26870)
+    interface. Thanks to Jorge GarcÃ­a for the help. (closes: #26870)
   * And finally wmifs is bugfree(tm) (or you haven't reported them :)
 
  -- Jordi Mallach <jordi@debian.org>  Sat, 16 Jun 2001 20:11:58 +0200
