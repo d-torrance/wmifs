@@ -1,0 +1,3 @@
+?package(wmifs):needs="x11" \
+   section="Apps/Net" title="WMifs" \
+   command="/usr/bin/wmifs"

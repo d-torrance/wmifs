@@ -74,6 +74,18 @@
 	----
 	Changes:
 	---
+	01/15/2002 (Matyas Koszik, koszik@debijan.lonyay.edu.hu)
+		* Patch that fixes segfaults on long interface names.
+	08/31/2001 (Davi Leal, davileal@terra.es)
+		* Patch that cuts long interface names, so they look
+		  good in wmifs. For example, "dummy0" gets displayed
+		  as "dumm0", "vmnet10" as "vmn10", etc.
+	06/16/2001 (Jorge García, Jorge.Garcia@uv.es)
+		* Added the LockMode, so wmifs doesn't swap to another
+		  interface if the one requested with "-i" isn't up.
+	05/06/2001 (Jordi Mallach, jordi@sindominio.net)
+		* Integrated many patches, fixing issues with suspended
+		  wmifs.
 	07/21/1999 (Stephen Pitts, smpitts@midsouth.rr.com)
 		* Added new constant: BUFFER_SIZE to determine the size
 		  of the buffer used in fgets() operations. Right now,
@@ -185,6 +197,9 @@
 #include "wmifs-master.xpm"
 #include "wmifs-mask.xbm"
 
+/* How often to check for new network interface, in seconds */
+#define CHECK_INTERFACE_INTERVAL 5
+
   /***********/
  /* Defines */
 /***********/
@@ -200,9 +215,9 @@
 #define LED_NET_TX			(5)
 #define LED_NET_POWER		(6)
 
-#define WMIFS_VERSION "1.2.1"
+#define WMIFS_VERSION "1.3b1"
 
-/* the size of the buffer read from /proc/net/* */
+/* the size of the buffer read from /proc/net/ */
 #define BUFFER_SIZE 512
   /**********************/
  /* External Variables */
@@ -214,10 +229,10 @@ extern	char **environ;
  /* Global Variables */
 /********************/
 
-char	*ProgName;
 char	*active_interface = NULL;
 int		TimerDivisor=60;
 int		WaveForm=0;
+int		LockMode=0;
 
   /*****************/
  /* PPP variables */
@@ -254,17 +269,13 @@ void get_ppp_stats(struct ppp_stats *cur);
  /* Main */
 /********/
 
-void main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 
 	int		i;
 	
 
 	/* Parse Command Line */
 
-	ProgName = argv[0];
-	if (strlen(ProgName) >= 5)
-		ProgName += (strlen(ProgName) - 5);
-	
 	for (i=1; i<argc; i++) {
 		char *arg = argv[i];
 
@@ -279,6 +290,9 @@ void main(int argc, char *argv[]) {
 			case 'i' :
 				active_interface = argv[i+1];
 				i++;
+				break;
+			case 'l' :
+				LockMode = 1;
 				break;
 			case 'v' :
 				printversion();
@@ -296,6 +310,7 @@ void main(int argc, char *argv[]) {
 	}
 
 	wmifs_routine(argc, argv);
+	return 0;
 }
 
 /*******************************************************************************\
@@ -307,7 +322,7 @@ void main(int argc, char *argv[]) {
 typedef struct {
 
 	char	name[8];
-	int		his[55][2];
+	int	his[55][2];
 	long	istatlast;
 	long	ostatlast;
 	
@@ -341,9 +356,9 @@ void wmifs_routine(int argc, char **argv) {
 	int			stat_online;
 	int			stat_current;
 
-	long		starttime;
-	long		curtime;
-	long		nexttime;
+	time_t		starttime;
+	time_t		curtime;
+	time_t		nexttime;
 
 	long		ipacket, opacket, istat, ostat;
 
@@ -372,17 +387,15 @@ void wmifs_routine(int argc, char **argv) {
 	if (MIDDLE_ACTION) middle_action = strdup(MIDDLE_ACTION);
 	if (RIGHT_ACTION) right_action = strdup(RIGHT_ACTION);
 
-	/* Scan throught  the .rc files */
-	strcpy(temp, "/etc/wmifsrc");
-	parse_rcfile(temp, wmifs_keys);
+	/* Scan throught the .rc files */
+	parse_rcfile("/etc/wmifsrc", wmifs_keys);
 
 	p = getenv("HOME");
 	strcpy(temp, p);
 	strcat(temp, "/.wmifsrc");
 	parse_rcfile(temp, wmifs_keys);
 
-	strcpy(temp, "/etc/wmifsrc.fixed");
-	parse_rcfile(temp, wmifs_keys);
+	parse_rcfile("/etc/wmifsrc.fixed", wmifs_keys);
 
 	openXwindow(argc, argv, wmifs_master_xpm, wmifs_mask_bits, wmifs_mask_width, wmifs_mask_height);
 
@@ -391,13 +404,8 @@ void wmifs_routine(int argc, char **argv) {
 	AddMouseRegion(1, 5, 20, 58, 58);
 
 	starttime = time(0);
-	nexttime = starttime + 5;
+	nexttime = starttime + CHECK_INTERFACE_INTERVAL;
 
-	for (i=0; i<stat_online; i++) {
-		get_statistics(stat_devices[i].name, &ipacket, &opacket, &istat, &ostat);
-		stat_devices[i].istatlast = istat;
-		stat_devices[i].ostatlast = ostat;
-	}
 
 	DrawActiveIFS(stat_devices[stat_current].name);
 
@@ -431,17 +439,14 @@ void wmifs_routine(int argc, char **argv) {
 			
 			stat_devices[i].istatlast = istat;
 			stat_devices[i].ostatlast = ostat;
-			RedrawWindow();
 		}
+		RedrawWindow();
 		
 		if (curtime >= nexttime) {
-			nexttime+=5;
+			nexttime=curtime+CHECK_INTERFACE_INTERVAL;
 
+			DrawStats(&stat_devices[stat_current].his[0][0], 54, 40, 5, 58);
 			for (i=0; i<stat_online; i++) {
-				if (i == stat_current) {
-
-					DrawStats(&stat_devices[i].his[0][0], 54, 40, 5, 58);
-				}
 				if (stillonline(stat_devices[i].name)) {
 					for (j=1; j<54; j++) {
 						stat_devices[i].his[j-1][0] = stat_devices[i].his[j][0];
@@ -465,9 +470,7 @@ void wmifs_routine(int argc, char **argv) {
 				exit(0);
 				break;
 			case ButtonPress:
-				i = CheckMouseRegion(Event.xbutton.x, Event.xbutton.y);
-
-				but_stat = i;
+				but_stat = CheckMouseRegion(Event.xbutton.x, Event.xbutton.y);
 				break;
 			case ButtonRelease:
 				i = CheckMouseRegion(Event.xbutton.x, Event.xbutton.y);
@@ -480,7 +483,7 @@ void wmifs_routine(int argc, char **argv) {
 						stat_online = checknetdevs();
 						stat_current = 0;
 						for (i=0; i<stat_online; i++) {
-							if (!strncmp(temp, stat_devices[i].name, 4)) {
+							if (!strcmp(temp, stat_devices[i].name)) {
 								stat_current = i;
 							}
 						}
@@ -517,7 +520,7 @@ void wmifs_routine(int argc, char **argv) {
 			}
 		}
 
-		usleep(50000L);
+		usleep(50000L);		/* 50 milliseconds */
 	}
 }
 
@@ -525,7 +528,7 @@ void wmifs_routine(int argc, char **argv) {
 |* void DrawActiveIFS(char *)												   *|
 \*******************************************************************************/
 
-void DrawActiveIFS(char *name) {
+void DrawActiveIFS(char *real_name) {
 
 	/* Cijfers op: 0,65
 	   Letters op: 0,75
@@ -537,10 +540,21 @@ void DrawActiveIFS(char *name) {
 	int		i;
 	int		c;
 	int		k;
+	int		len;
+	char		name[256];
 
 
 	copyXPMArea(5, 84, 30, 10, 5, 5);
 
+
+	strcpy(name,real_name);
+	len = strlen(name);
+	if (len > 5)
+	{
+		for (i=len-5; i<len && !(name[i]>='0' && name[i]<='9'); i++)  ;
+		for (; i<=len; i++) /* '=' to get the '\0' character moved too \*/
+			name[i-(len-5)] = name[i];
+	}
 
 	k = 5;
 	for (i=0; name[i]; i++) {
@@ -661,6 +675,7 @@ int stillonline(char *ifs) {
 		while (fgets(temp, BUFFER_SIZE, fp)) {
 			if (strstr(temp, ifs)) {
 				i = 1; /* Line is alive */
+				break;
 			}
 		}
 		fclose(fp);
@@ -712,6 +727,8 @@ int checknetdevs(void) {
 				strcpy(foundbuffer[devsfound], p);
 				devsfound++;
 			}
+			if (devsfound >= MAX_STAT_DEVICES)
+				break;
 		}
 		fclose(fd);
 	}
@@ -733,7 +750,7 @@ int checknetdevs(void) {
 		}
 	}
 
-	for (i=0, j=0; j<MAX_STAT_DEVICES; i++) {
+	for (i=0, j=0; j<MAX_STAT_DEVICES; i++, j++) {
 
 		while (!stat_devices[j].name[0] && j < MAX_STAT_DEVICES)
 			j++;
@@ -741,8 +758,6 @@ int checknetdevs(void) {
 		if (j < MAX_STAT_DEVICES && i != j) {
 			stat_devices[i] = stat_devices[j];
 		}
-		
-		j++;
 	}
 	i--;
 
@@ -759,8 +774,23 @@ int checknetdevs(void) {
 			i++;
 		}
 	}
+	if (LockMode && active_interface != NULL) {
+		k = 0;
+		for (j=0; j<i; j++)
+			if (!strcmp(stat_devices[j].name, active_interface)) {
+				k = 1;
+				break;
+			}
+		if (!k) {
+			strcpy(stat_devices[i].name, active_interface);
+			for (k=0; k<48; k++) {
+				stat_devices[i].his[k][0] = 0;
+				stat_devices[i].his[k][1] = 0;
+			}
+			devsfound++;
+		}
 
-
+	}
 	return devsfound;
 }
 
@@ -775,7 +805,7 @@ void DrawStats(int *his, int num, int size, int x_left, int y_bottom) {
 	int		*p;
 	int		p0,p1,p2,p3;
 
-	pixels_per_byte = 1*size;
+	pixels_per_byte = size;
 	p = his;
 	for (j=0; j<num; j++) {
 		if (p[0] + p[1] > pixels_per_byte)
@@ -832,6 +862,7 @@ void usage(void) {
 	fprintf(stderr, "\t-d <display name>\n");
 	fprintf(stderr, "\t-h\tthis help screen\n");
 	fprintf(stderr, "\t-i <interface name>\tdefault (as it appears in /proc/net/route)\n");
+	fprintf(stderr, "\t-l\tstarts in lock mode\n");
 	fprintf(stderr, "\t-v\tprint the version number\n");
 	fprintf(stderr, "\t-w\twaveform load\n");
 	fprintf(stderr, "\n");
@@ -862,9 +893,7 @@ void get_ppp_stats(struct ppp_stats *cur) {
 
 	if (ioctl(ppp_h, SIOCGPPPSTATS, &req) < 0) {
 /*		fprintf(stderr, "heyho!\n"); */
-		/* This is an error of some sort! */
 	}
-
 	*cur = req.stats;
 }
 
