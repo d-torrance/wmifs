@@ -1,0 +1,17 @@
+wmifs (1.3b1-2) frozen unstable; urgency=low
+
+  * Make it so that a make clean does not cause debian/rules clean to
+    bomb out. Fixes bug #28502.
+
+ -- Ben Gertzfield <che@debian.org>  Sun, 25 Oct 1998 10:34:44 -0800
+
+wmifs (1.3b1-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Ben Gertzfield <che@debian.org>  Tue, 25 Aug 1998 13:36:10 -0700
+
+Local variables:
+mode: debian-changelog
+add-log-mailing-address: "che@debian.org"
+End:
