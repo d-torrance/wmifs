@@ -1,10 +1,15 @@
-This package was debianized by Ben Gertzfield che@debian.org on
+This package was debianized by Ben Gertzfield <che@debian.org> on
 Tue, 25 Aug 1998 13:37:07 -0700
+Jordi Mallach <jordi@debian.org> took over the packaging on
+Sun,  6 May 2001 13:50:04 +0200
 
-It was downloaded from http://windowmaker.mezaway.org/wmifs.html
+It was downloaded from http://web.cs.mun.ca/~gstarkes/wmaker/dockapps/net.html
 
+Upstream Authors: Martijn Pieterse <pieterse@xs4all.nl>
+		  Antoine Nulle <warp@xs4all.nl>
+	    
 Copyright:
 
 WMiFS is released under the GNU General Public License, version 2 or
 greater, found on Debian GNU/Linux systems in the file
-/usr/doc/copyright/GPL
+`/usr/share/common-licenses/GPL'

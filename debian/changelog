@@ -1,3 +1,100 @@
+wmifs (1.3b1-11) unstable; urgency=low
+
+  * debian/changelog: removed emacs stuff.
+  * debian/conffiles: removed; DH_COMPAT=3 adds it for us.
+  * debian/copyright: added upstream authors.
+  * debian/rules: removed dh_make cruft.
+  * debian/wmifs.1: documented Lock Mode.
+  * wmifs/wmifs.c: the long interface name patch made wmifs segfault with
+    some interfaces. Matyas Koszik <koszik@debijan.lonyay.edu.hu> spotted
+    problem and mhp provided a nice patch with Matyas' fix (closes: #126501).
+    This may fix #119181 too, but I can't check too well.
+
+ -- Jordi Mallach <jordi@debian.org>  Tue, 15 Jan 2002 20:56:47 +0100
+
+wmifs (1.3b1-10) unstable; urgency=low
+
+  * wmifs/wmifs.c: patch from Davi Leal <davileal@terra.es> which fixes
+    the display of long interface names. wmifs only has space to display
+    interface names which are 5 characters long at the most. Now it will
+    cut interface names so they fit well. For example, "dummy0" will be
+    displayed as "dumm0", or "vmnet10" as "vmn10" (closes: #103083).
+
+ -- Jordi Mallach <jordi@debian.org>  Fri, 31 Aug 2001 02:51:59 +0200
+
+wmifs (1.3b1-9) unstable; urgency=low
+
+  * debian/control: Standards-Version: 3.5.6.0 (no changes).
+  * wmifs/wmifs.c: uncomment the ioctl call which makes ppp stats work.
+    Thanks, Patrick (closes: #105361).
+
+ -- Jordi Mallach <jordi@debian.org>  Thu,  2 Aug 2001 02:55:50 +0200
+
+wmifs (1.3b1-8) unstable; urgency=low
+
+  * wmifs/wmifs.c: fixed a thinko in the previous patch. If you use
+    LockMode without providing an interface, ignore the lock. Thanks
+    again, Jorge.
+
+ -- Jordi Mallach <jordi@debian.org>  Fri, 24 Jun 2001 23:24:29 +0200
+
+wmifs (1.3b1-7) unstable; urgency=low
+
+  * debian/control: Standards-Version: 3.5.5.0.
+  * debian/wmifs.1: added a missing newline.
+  * wmifs/wmifs.c: added a new command line argument, -l, which starts
+    wmifs in "Lock Mode". With it, if you specify an interface with -i
+    but it's not up, wmifs won't try to fall back to another existing
+    interface. Thanks to Jorge García for the help. (closes: #26870)
+  * And finally wmifs is bugfree(tm) (or you haven't reported them :)
+
+ -- Jordi Mallach <jordi@debian.org>  Sat, 16 Jun 2001 20:11:58 +0200
+
+wmifs (1.3b1-6) unstable; urgency=low
+
+  * New Maintainer.
+  * debian/control:
+    + Standards-Version: 3.5.4.0
+    + Build-Depends against xlibs-dev, debhelper (>= 3.0.0) (closes: #92681)
+    + minor modifications to the description
+  * debian/rules:
+    + added DEB_BUILD_OPTIONS support
+    + cleaned up a bit, added the install target
+    + DH_COMPAT=3
+    + install binary in /usr/bin
+    + install the new manpage
+  * debian/README.Debian: removed.
+  * debian/copyright:
+    + new download URL
+    + changed copyright location
+  * debian/menu: it's back! (closes: #77005, thanks xtifr)
+  * debian/wmifs.1: wrote a manpage for wmifs. It's not funny, but
+    someone else wrote it while I was working on the NMU. Thanks for
+    the effort anyway, Evelyn (closes: #93478).
+  * wmifs/Makefile:
+    + fixed things so DEB_BUILD_OPTIONS work
+    + fixed clean rule (closes: #27458)
+  * wmbifs/wmifs.c:
+    + applied patch from Barak Pearlmutter <bap@cs.unm.edu> which fixes a
+      bad 'catching up' behaviour after suspends (closes: #40682, #83003)
+    + applied patch from Chris Hanson <cph@martigny.ai.mit.edu>, fixes
+      a segfault when there are many network interfaces in the system
+      (closes: #39922)
+    + fixed WMIFS_VERSION
+  * These were fixed in previous uploads, closes: #41746, #67983).
+
+ -- Jordi Mallach <jordi@debian.org>  Sun,  6 May 2001 13:50:04 +0200
+
+wmifs (1.3b1-5.1) unstable; urgency=low
+
+  * NMU by Branden Robinson <branden@debian.org>.
+  * Recompile against modern xpm4g package to get proper shared library
+    dependency and permit this package to be installed with forthcoming
+    XFree86 4.x packages, which include libXpm.
+  * debian/control: added Build-Depends
+
+ -- Branden Robinson <branden@debian.org>  Mon, 23 Oct 2000 14:45:48 -0500
+
 wmifs (1.3b1-5) unstable; urgency=low
 
   * Remove annoying "heyho!" debugging printf that happened when one
@@ -30,8 +127,3 @@ wmifs (1.3b1-1) unstable; urgency=low
   * Initial Release.
 
  -- Ben Gertzfield <che@debian.org>  Tue, 25 Aug 1998 13:36:10 -0700
-
-Local variables:
-mode: debian-changelog
-add-log-mailing-address: "che@debian.org"
-End:
