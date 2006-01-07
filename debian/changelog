@@ -1,3 +1,13 @@
+wmifs (1.3b1-16) unstable; urgency=low
+
+  * debian/control:
+    + Build-Depend on libx11-dev | xlibs-dev, libxpm-dev | xlibs-dev.
+    + Build-Depend on debhelper (>= 5.0.0).
+    + Bump Standards-Version to 3.6.2.1, no changes needed.
+  * debian/compat: Switch to debhelper compatibility level 5.
+
+ -- Romain Francoise <rfrancoise@debian.org>  Sun,  8 Jan 2006 00:41:03 +0100
+
 wmifs (1.3b1-15) unstable; urgency=low
 
   * wmifs/wmifs.c: patch from Tom Marshall <tommy@home.tig-grr.com>, adds
@@ -20,7 +30,7 @@ wmifs (1.3b1-13) unstable; urgency=low
 
   * The "Stepping up" release.
   * New maintainer.
-  * debian/control: 
+  * debian/control:
     + Update maintainer contact info.
     + Add Recommends on wmaker.
     + Add Build-Depends on cdbs.
