@@ -1,3 +1,12 @@
+wmifs (1.3b1-17) unstable; urgency=low
+
+  * debian/control:
+    + Set maintainer to Debian QA group.
+    + Drop build-depends on obsolete xlibs-dev.
+    + Bump Standards-Version to 3.7.2, no changes needed.
+
+ -- Romain Francoise <rfrancoise@debian.org>  Tue, 28 Aug 2007 21:48:53 +0200
+
 wmifs (1.3b1-16) unstable; urgency=low
 
   * debian/control:
