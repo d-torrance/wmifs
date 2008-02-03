@@ -1,3 +1,11 @@
+wmifs (1.3b1-18) unstable; urgency=low
+
+  * New maintainer, closes: #439971.
+  * Removed debhepler and cdbs build-dependency.
+  * Updated standards version.
+
+ -- Martin A. Godisch <godisch@debian.org>  Sun, 03 Feb 2008 17:15:18 +0100
+
 wmifs (1.3b1-17) unstable; urgency=low
 
   * debian/control:

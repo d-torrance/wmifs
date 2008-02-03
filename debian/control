@@ -1,9 +1,9 @@
 Source: wmifs
 Section: x11
 Priority: optional
-Maintainer: Debian QA Group <packages@qa.debian.org>
-Build-Depends: debhelper (>= 5.0.0), cdbs, libx11-dev, libxpm-dev
-Standards-Version: 3.7.2
+Maintainer: Martin A. Godisch <godisch@debian.org>
+Build-Depends: libx11-dev, libxpm-dev
+Standards-Version: 3.7.3
 
 Package: wmifs
 Architecture: any
