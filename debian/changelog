@@ -1,3 +1,10 @@
+wmifs (1.3b1-19) unstable; urgency=low
+
+  * Fixed build-dependencies, closes: #486995.
+  * Updated standards version.
+
+ -- Martin A. Godisch <godisch@debian.org>  Mon, 23 Jun 2008 21:30:15 +0200
+
 wmifs (1.3b1-18) unstable; urgency=low
 
   * New maintainer, closes: #439971.

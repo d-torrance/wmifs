@@ -2,8 +2,8 @@ Source: wmifs
 Section: x11
 Priority: optional
 Maintainer: Martin A. Godisch <godisch@debian.org>
-Build-Depends: libx11-dev, libxpm-dev
-Standards-Version: 3.7.3
+Build-Depends: libx11-dev, libxext-dev, libxpm-dev
+Standards-Version: 3.8.0
 
 Package: wmifs
 Architecture: any
