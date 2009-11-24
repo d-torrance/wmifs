@@ -4,17 +4,26 @@ Jordi Mallach <jordi@debian.org> took over the packaging on
 Sun,  6 May 2001 13:50:04 +0200
 Romain Francoise <rfrancoise@debian.org> then took the package from
 Jordi's hands on Fri, 05 Dec 2003 20:05:51 +0100
-
 The package is now maintained by Martin A. Godisch <godisch@debian.org>.
 
+It was downloaded from http://web.cs.mun.ca/~gstarkes/wmaker/dockapps/net.html.
 
-It was downloaded from http://web.cs.mun.ca/~gstarkes/wmaker/dockapps/net.html
+Copyright (c) 1998-2004
+Martijn Pieterse <pieterse@xs4all.nl> and Antoine Nulle <warp@xs4all.nl>
 
-Upstream Authors: Martijn Pieterse <pieterse@xs4all.nl>
-		  Antoine Nulle <warp@xs4all.nl>
-	    
-Copyright:
+  This program is free software; you can redistribute it and/or modify it
+  under the terms of the GNU General Public License as published by the
+  Free Software Foundation; either version 2 of the License, or (at your
+  option) any later version.
 
-WMiFS is released under the GNU General Public License, version 2 or
-greater, found on Debian GNU/Linux systems in the file
-`/usr/share/common-licenses/GPL'
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License along
+  with this program; if not, write to the Free Software Foundation, Inc.,
+  51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in /usr/share/common-licenses/GPL.
