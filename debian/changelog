@@ -1,3 +1,11 @@
+wmifs (1.3b1-20) unstable; urgency=low
+
+  * Replaced stats_ptr and ifr__name which are not defined on all archs.
+  * Updated copyright file.
+  * Updated standards version.
+
+ -- Martin A. Godisch <godisch@debian.org>  Tue, 24 Nov 2009 21:49:25 +0100
+
 wmifs (1.3b1-19) unstable; urgency=low
 
   * Fixed build-dependencies, closes: #486995.

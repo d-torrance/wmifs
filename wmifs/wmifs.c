@@ -87,7 +87,7 @@
 		* Patch that cuts long interface names, so they look
 		  good in wmifs. For example, "dummy0" gets displayed
 		  as "dumm0", "vmnet10" as "vmn10", etc.
-	06/16/2001 (Jorge García, Jorge.Garcia@uv.es)
+	06/16/2001 (Jorge Garc?a, Jorge.Garcia@uv.es)
 		* Added the LockMode, so wmifs doesn't swap to another
 		  interface if the one requested with "-i" isn't up.
 	05/06/2001 (Jordi Mallach, jordi@sindominio.net)
@@ -916,9 +916,9 @@ void get_ppp_stats(struct ppp_stats *cur) {
 
 	memset(&req, 0, sizeof(req));
 
-	req.stats_ptr = (caddr_t) &req.stats;
+	req.b.ifr_ifru.ifru_data = (caddr_t) &req.stats;
 
-	sprintf(req.ifr__name, "ppp%d", PPP_UNIT);
+	sprintf(req.b.ifr_ifrn.ifrn_name, "ppp%d", PPP_UNIT);
 
 	if (ioctl(ppp_h, SIOCGPPPSTATS, &req) < 0) {
 /*		fprintf(stderr, "heyho!\n"); */
