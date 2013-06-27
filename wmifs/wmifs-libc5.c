@@ -848,9 +848,9 @@ void get_ppp_stats(struct ppp_stats *cur) {
 
 	memset(&req, 0, sizeof(req));
 
-	req.b.ifr_ifru.ifru_data = (caddr_t) &req.stats;
+	req.stats_ptr = (caddr_t) &req.stats;
 
-	sprintf(req.b.ifr_ifrn.ifrn_name, "ppp%d", PPP_UNIT);
+	sprintf(req.ifr__name, "ppp%d", PPP_UNIT);
 
 	if (ioctl(ppp_h, SIOCGPPPSTATS, &req) < 0) {
 		fprintf(stderr, "heyho!\n");
