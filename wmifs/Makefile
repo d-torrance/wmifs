@@ -12,7 +12,7 @@ OBJS =	wmifs.o \
 		../wmgeneral/misc.o \
 		../wmgeneral/list.o
 
-CFLAGS = -Wall -O2 -g
+CFLAGS += -Wall -O2 -g
 
 INSTALL = /usr/bin/install
 INSTALL_DIR     = $(INSTALL) -p -d -o root -g root -m 755
@@ -23,7 +23,7 @@ INSTALL_FILE    = $(INSTALL) -p -o root -g root -m 644
 	$(CC) -c $(CFLAGS) $< -o $*.o
 
 wmifs: $(OBJS)
-	$(CC) -o wmifs $^ -lXext $(LIBDIR) $(LIBS)
+	$(CC) $(LDFLAGS) -o wmifs $^ -lXext $(LIBDIR) $(LIBS)
 
 all:: wmifs
 

@@ -215,6 +215,14 @@
  /* Defines */
 /***********/
 
+#ifndef ifr__name
+#define ifr__name ifr_name
+#endif
+
+#ifndef stats_ptr
+#define stats_ptr stats.p.FIXME
+#endif
+
 /* Fill in the hardcoded actions */
 #define LEFT_ACTION (NULL)
 #define MIDDLE_ACTION (NULL)
@@ -416,6 +424,10 @@ void wmifs_routine(int argc, char **argv) {
 	parse_rcfile("/etc/wmifsrc", wmifs_keys);
 
 	p = getenv("HOME");
+	if (p == NULL || *p == 0) {
+		fprintf(stderr, "Unknown $HOME directory, please check your environment\n");
+		return;
+	}
 	strcpy(temp, p);
 	strcat(temp, "/.wmifsrc");
 	parse_rcfile(temp, wmifs_keys);
@@ -916,9 +928,9 @@ void get_ppp_stats(struct ppp_stats *cur) {
 
 	memset(&req, 0, sizeof(req));
 
-	req.b.ifr_ifru.ifru_data = (caddr_t) &req.stats;
+	req.stats_ptr = (caddr_t) &req.stats;
 
-	sprintf(req.b.ifr_ifrn.ifrn_name, "ppp%d", PPP_UNIT);
+	sprintf(req.ifr__name, "ppp%d", PPP_UNIT);
 
 	if (ioctl(ppp_h, SIOCGPPPSTATS, &req) < 0) {
 /*		fprintf(stderr, "heyho!\n"); */

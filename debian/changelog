@@ -1,3 +1,19 @@
+wmifs (1.3b1-22) unstable; urgency=low
+
+  * Fixed segfault, thanks to The Mayhem Team from Cylab,
+    Carnegie Mellon University.
+  * Updated standards version:
+    + added build-arch, build-indep targets to debian/build,
+    + added hardening build flags.
+
+ -- Martin A. Godisch <godisch@debian.org>  Thu, 27 Jun 2013 21:11:29 +0200
+
+wmifs (1.3b1-21) unstable; urgency=low
+
+  * Now really fixed stats_ptr and ifr__name issue.
+
+ -- Martin A. Godisch <godisch@debian.org>  Wed, 25 Nov 2009 21:27:35 +0100
+
 wmifs (1.3b1-20) unstable; urgency=low
 
   * Replaced stats_ptr and ifr__name which are not defined on all archs.

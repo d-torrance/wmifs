@@ -3,7 +3,10 @@
 testdir  = test -f wmifs/wmifs.c && test -f debian/rules
 testroot = test x`whoami` = xroot
 
-CFLAGS = -Wall -g
+CPPFLAGS = -Wall $(shell dpkg-buildflags --get CPPFLAGS)
+export CPPFLAGS
+
+CFLAGS = -Wall -g $(shell dpkg-buildflags --get CFLAGS)
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
 else
@@ -11,14 +14,21 @@ else
 endif
 export CFLAGS
 
+LDFLAGS = -Wall $(shell dpkg-buildflags --get LDFLAGS)
+export LDFLAGS
+
 clean:
 	$(testdir)
-	rm -f build debian/files debian/rejected debian/substvars
+	rm -f build build-arch build-indep debian/files debian/rejected debian/substvars
 	$(MAKE) -C wmifs clean
 	-cat `ls -r debian/patches/*.diff` /dev/null | patch -RENtp1 -r debian/rejected --no-backup-if-mismatch
 	rm -rf debian/tmp
 
-build:
+build: build-arch
+
+build-indep:
+
+build-arch:
 	$(testdir)
 	-cat debian/patches/*.diff | patch -Ntp1 -r debian/rejected --no-backup-if-mismatch
 	$(MAKE) -C wmifs
