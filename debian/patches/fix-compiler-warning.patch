@@ -1,0 +1,28 @@
+Description: Fix compiler warning.
+ In particular, the following warning:
+ wmifs.c:641:28: warning: variable ‘ppp_old’ set but not used
+ [-Wunused-but-set-variable]
+   struct ppp_stats ppp_cur, ppp_old;
+                             ^
+Author: Doug Torrance <dtorrance@monmouthcollege.edu>
+Last-Update: 2014-10-23
+
+--- a/wmifs/wmifs.c
++++ b/wmifs/wmifs.c
+@@ -638,7 +638,7 @@
+ 	int					input, output;
+ 	int					i;
+ 	int					found;
+-	struct ppp_stats	ppp_cur, ppp_old;
++	struct ppp_stats	ppp_cur;
+ 	static int			ppp_opened;
+ 
+ 
+@@ -650,7 +650,6 @@
+ 			if (ppp_h < 0)
+ 				return -1;
+ 			get_ppp_stats(&ppp_cur);
+-			ppp_old = ppp_cur;
+ 			ppp_opened = 1;
+ 		}
+ 
