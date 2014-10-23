@@ -68,4 +68,11 @@ endif
 	chmod -R u+w,go=u-w debian/tmp
 	dpkg --build debian/tmp ..
 
+get-orig-source:
+	uscan --verbose --force-download --no-symlink
+	@if test -e ../wmifs-*.download ; then \
+		rename -fv "s/wmifs-(.+)\.download/wmifs_\1\.orig\.tar\.gz/" \
+			../wmifs-*.download; \
+	fi
+
 .PHONY: clean binary-indep binary-arch binary
