@@ -1,3 +1,26 @@
+wmifs (1.4-1) UNRELEASED; urgency=medium
+
+  * New maintainer (Closes: #672846).
+  * New upstream release.
+    - Incorporates all previous Debian patches.
+  * debian/compat
+    - New file; use 9.
+  * debian/control
+    - Add debhelper (>=9) to Build-Depends.
+    - Add Homepage and Vcs-* fields.
+  * debian/copyright
+    - Convert to machine-readable format version 1.0.
+  * debian/rules
+    - Add get-orig-source target.
+  * debian/source/format
+    - New file; use 3.0 (quilt).
+  * debian/watch
+    - New file.
+  * debian/wmifs.1
+    - Remove file; now included upstream.
+
+ -- Doug Torrance <dtorrance@monmouthcollege.edu>  Thu, 23 Oct 2014 15:02:06 -0500
+
 wmifs (1.3b1-22) unstable; urgency=low
 
   * Fixed segfault, thanks to The Mayhem Team from Cylab,
