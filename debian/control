@@ -12,7 +12,7 @@ Package: wmifs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: wmaker
-Conflicts: wmppp.app (<= 1.1-1)
+Breaks: wmppp.app (<= 1.1-1)
 Replaces: wmppp.app (<= 1.1-1)
 Description: WindowMaker dock app for monitoring network traffic
  wmifs is a dockable applet for X11 that can monitor all your network
