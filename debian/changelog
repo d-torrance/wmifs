@@ -1,4 +1,4 @@
-wmifs (1.4-1) UNRELEASED; urgency=medium
+wmifs (1.4-1) unstable; urgency=medium
 
   * New maintainer (Closes: #672846).
   * New upstream release.
@@ -8,10 +8,21 @@ wmifs (1.4-1) UNRELEASED; urgency=medium
   * debian/control
     - Add debhelper (>=9) to Build-Depends.
     - Add Homepage and Vcs-* fields.
+    - Add ${misc:Depends} to Depends.
+    - Switch Conflicts to Breaks.
+    - Bump Standards-Version to 3.9.6.
   * debian/copyright
     - Convert to machine-readable format version 1.0.
+  * debian/docs
+    - New file.
+  * debian/patches
+    - (fix-compiler-warning.patch) Fix unused but set variable warning.
+    - (fix-manpage.patch) Fix Lintian manpage warnings.
+  * debian/post*
+    - Remove files; automatically created by dh_installmenu.
   * debian/rules
     - Add get-orig-source target.
+    - Use dh.
   * debian/source/format
     - New file; use 3.0 (quilt).
   * debian/watch
@@ -19,7 +30,7 @@ wmifs (1.4-1) UNRELEASED; urgency=medium
   * debian/wmifs.1
     - Remove file; now included upstream.
 
- -- Doug Torrance <dtorrance@monmouthcollege.edu>  Thu, 23 Oct 2014 15:02:06 -0500
+ -- Doug Torrance <dtorrance@monmouthcollege.edu>  Thu, 23 Oct 2014 20:11:53 -0500
 
 wmifs (1.3b1-22) unstable; urgency=low
 
