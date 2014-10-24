@@ -23,76 +23,76 @@ wmifs (1.4-1) UNRELEASED; urgency=medium
 
 wmifs (1.3b1-22) unstable; urgency=low
 
-  * Fixed segfault, thanks to The Mayhem Team from Cylab,
+  * Fix segfault, thanks to The Mayhem Team from Cylab,
     Carnegie Mellon University.
-  * Updated standards version:
-    + added build-arch, build-indep targets to debian/build,
-    + added hardening build flags.
+  * Update Standards-Version to 3.9.4
+    - Add build-arch, build-indep targets to debian/build,
+    - Add hardening build flags.
 
  -- Martin A. Godisch <godisch@debian.org>  Thu, 27 Jun 2013 21:11:29 +0200
 
 wmifs (1.3b1-21) unstable; urgency=low
 
-  * Now really fixed stats_ptr and ifr__name issue.
+  * Now really fix stats_ptr and ifr__name issue.
 
  -- Martin A. Godisch <godisch@debian.org>  Wed, 25 Nov 2009 21:27:35 +0100
 
 wmifs (1.3b1-20) unstable; urgency=low
 
-  * Replaced stats_ptr and ifr__name which are not defined on all archs.
-  * Updated copyright file.
-  * Updated standards version.
+  * Replace stats_ptr and ifr__name which are not defined on all archs.
+  * Update copyright file.
+  * Update Standards-Version to 3.8.3.
 
  -- Martin A. Godisch <godisch@debian.org>  Tue, 24 Nov 2009 21:49:25 +0100
 
 wmifs (1.3b1-19) unstable; urgency=low
 
-  * Fixed build-dependencies, closes: #486995.
-  * Updated standards version.
+  * Fix build-dependencies (Closes: #486995).
+  * Update Standards-Version to 3.8.0.
 
  -- Martin A. Godisch <godisch@debian.org>  Mon, 23 Jun 2008 21:30:15 +0200
 
 wmifs (1.3b1-18) unstable; urgency=low
 
-  * New maintainer, closes: #439971.
-  * Removed debhepler and cdbs build-dependency.
-  * Updated standards version.
+  * New maintainer (Closes: #439971).
+  * Remove debhepler and cdbs build-dependency.
+  * Update Standards-Version to 3.7.3.
 
  -- Martin A. Godisch <godisch@debian.org>  Sun, 03 Feb 2008 17:15:18 +0100
 
 wmifs (1.3b1-17) unstable; urgency=low
 
-  * debian/control:
-    + Set maintainer to Debian QA group.
-    + Drop build-depends on obsolete xlibs-dev.
-    + Bump Standards-Version to 3.7.2, no changes needed.
+  * debian/control
+    - Set maintainer to Debian QA group.
+    - Drop Build-Depends on obsolete xlibs-dev.
+    - Bump Standards-Version to 3.7.2, no changes needed.
 
  -- Romain Francoise <rfrancoise@debian.org>  Tue, 28 Aug 2007 21:48:53 +0200
 
 wmifs (1.3b1-16) unstable; urgency=low
 
-  * debian/control:
-    + Build-Depend on libx11-dev | xlibs-dev, libxpm-dev | xlibs-dev.
-    + Build-Depend on debhelper (>= 5.0.0).
-    + Bump Standards-Version to 3.6.2.1, no changes needed.
+  * debian/control
+    - Build-Depend on libx11-dev | xlibs-dev, libxpm-dev | xlibs-dev.
+    - Build-Depend on debhelper (>= 5.0.0).
+    - Bump Standards-Version to 3.6.2.1, no changes needed.
   * debian/compat: Switch to debhelper compatibility level 5.
 
  -- Romain Francoise <rfrancoise@debian.org>  Sun,  8 Jan 2006 00:41:03 +0100
 
 wmifs (1.3b1-15) unstable; urgency=low
 
-  * wmifs/wmifs.c: patch from Tom Marshall <tommy@home.tig-grr.com>, adds
+  * wmifs/wmifs.c: Patch from Tom Marshall <tommy@home.tig-grr.com>, adds
     a special interface name "auto" for the -i option. "wmifs -i auto"
-    will automatically select the first up interface (closes: #204873).
+    will automatically select the first up interface (Closes: #204873).
   * debian/wmifs.1: Document "-i auto" behavior.
 
  -- Romain Francoise <rfrancoise@debian.org>  Sun, 29 Feb 2004 17:19:12 +0100
 
 wmifs (1.3b1-14) unstable; urgency=low
 
-  * wmifs/wmifs.c: patch from Peter Samuelson <peter@samba-tng.org> to
+  * wmifs/wmifs.c: Patch from Peter Samuelson <peter@samba-tng.org> to
     make sampling and scrolling intervals customizable, adds new options
-    -I and -s (closes: #226689).
+    -I and -s (Closes: #226689).
   * debian/wmifs.1: Add new options -I and -s.
 
  -- Romain Francoise <rfrancoise@debian.org>  Thu,  8 Jan 2004 19:21:06 +0100
@@ -101,10 +101,10 @@ wmifs (1.3b1-13) unstable; urgency=low
 
   * The "Stepping up" release.
   * New maintainer.
-  * debian/control:
-    + Update maintainer contact info.
-    + Add Recommends on wmaker.
-    + Add Build-Depends on cdbs.
+  * debian/control
+    - Update maintainer contact info.
+    - Add Recommends on wmaker.
+    - Add Build-Depends on cdbs.
   * debian/copyright: Update maintainer information.
 
  -- Romain Francoise <rfrancoise@debian.org>  Fri,  5 Dec 2003 20:17:25 +0100
@@ -112,50 +112,50 @@ wmifs (1.3b1-13) unstable; urgency=low
 wmifs (1.3b1-12) unstable; urgency=low
 
   * The "Why hasn't anyone taken over wmifs yet?" release.
-  * debian/changelog: recode as UTF-8.
-  * debian/control:
-    + build-depend on cdbs, bump debhelper to (>= 4.1.0).
-    + bump Standards-Version to 3.6.1.0.
-  * debian/compat: use debhelper 4.
-  * debian/rules: switch to cdbs.
+  * debian/changelog: Recode as UTF-8.
+  * debian/control
+    - Build-depend on cdbs, bump debhelper to (>= 4.1.0).
+    - Bump Standards-Version to 3.6.1.0.
+  * debian/compat: Use debhelper 4.
+  * debian/rules: Switch to cdbs.
 
  -- Jordi Mallach <jordi@debian.org>  Tue, 25 Nov 2003 17:20:41 +0100
 
 wmifs (1.3b1-11) unstable; urgency=low
 
-  * debian/changelog: removed emacs stuff.
-  * debian/conffiles: removed; DH_COMPAT=3 adds it for us.
-  * debian/copyright: added upstream authors.
-  * debian/rules: removed dh_make cruft.
-  * debian/wmifs.1: documented Lock Mode.
-  * wmifs/wmifs.c: the long interface name patch made wmifs segfault with
+  * debian/changelog: Remove emacs stuff.
+  * debian/conffiles: Remove; DH_COMPAT=3 adds it for us.
+  * debian/copyright: Add upstream authors.
+  * debian/rules: Remove dh_make cruft.
+  * debian/wmifs.1: Document Lock Mode.
+  * wmifs/wmifs.c: The long interface name patch made wmifs segfault with
     some interfaces. Matyas Koszik <koszik@debijan.lonyay.edu.hu> spotted
-    problem and mhp provided a nice patch with Matyas' fix (closes: #126501).
+    problem and mhp provided a nice patch with Matyas' fix (Closes: #126501).
     This may fix #119181 too, but I can't check too well.
 
  -- Jordi Mallach <jordi@debian.org>  Tue, 15 Jan 2002 20:56:47 +0100
 
 wmifs (1.3b1-10) unstable; urgency=low
 
-  * wmifs/wmifs.c: patch from Davi Leal <davileal@terra.es> which fixes
+  * wmifs/wmifs.c: Patch from Davi Leal <davileal@terra.es> which fixes
     the display of long interface names. wmifs only has space to display
     interface names which are 5 characters long at the most. Now it will
     cut interface names so they fit well. For example, "dummy0" will be
-    displayed as "dumm0", or "vmnet10" as "vmn10" (closes: #103083).
+    displayed as "dumm0", or "vmnet10" as "vmn10" (Closes: #103083).
 
  -- Jordi Mallach <jordi@debian.org>  Fri, 31 Aug 2001 02:51:59 +0200
 
 wmifs (1.3b1-9) unstable; urgency=low
 
   * debian/control: Standards-Version: 3.5.6.0 (no changes).
-  * wmifs/wmifs.c: uncomment the ioctl call which makes ppp stats work.
+  * wmifs/wmifs.c: Uncomment the ioctl call which makes ppp stats work.
     Thanks, Patrick (closes: #105361).
 
  -- Jordi Mallach <jordi@debian.org>  Thu,  2 Aug 2001 02:55:50 +0200
 
 wmifs (1.3b1-8) unstable; urgency=low
 
-  * wmifs/wmifs.c: fixed a thinko in the previous patch. If you use
+  * wmifs/wmifs.c: Fix a thinko in the previous patch. If you use
     LockMode without providing an interface, ignore the lock. Thanks
     again, Jorge.
 
@@ -164,11 +164,11 @@ wmifs (1.3b1-8) unstable; urgency=low
 wmifs (1.3b1-7) unstable; urgency=low
 
   * debian/control: Standards-Version: 3.5.5.0.
-  * debian/wmifs.1: added a missing newline.
-  * wmifs/wmifs.c: added a new command line argument, -l, which starts
+  * debian/wmifs.1: Add a missing newline.
+  * wmifs/wmifs.c: Add a new command line argument, -l, which starts
     wmifs in "Lock Mode". With it, if you specify an interface with -i
     but it's not up, wmifs won't try to fall back to another existing
-    interface. Thanks to Jorge García for the help. (closes: #26870)
+    interface. Thanks to Jorge García for the help (Closes: #26870).
   * And finally wmifs is bugfree(tm) (or you haven't reported them :)
 
  -- Jordi Mallach <jordi@debian.org>  Sat, 16 Jun 2001 20:11:58 +0200
@@ -176,35 +176,35 @@ wmifs (1.3b1-7) unstable; urgency=low
 wmifs (1.3b1-6) unstable; urgency=low
 
   * New Maintainer.
-  * debian/control:
-    + Standards-Version: 3.5.4.0
-    + Build-Depends against xlibs-dev, debhelper (>= 3.0.0) (closes: #92681)
-    + minor modifications to the description
-  * debian/rules:
-    + added DEB_BUILD_OPTIONS support
-    + cleaned up a bit, added the install target
-    + DH_COMPAT=3
-    + install binary in /usr/bin
-    + install the new manpage
-  * debian/README.Debian: removed.
-  * debian/copyright:
-    + new download URL
-    + changed copyright location
-  * debian/menu: it's back! (closes: #77005, thanks xtifr)
-  * debian/wmifs.1: wrote a manpage for wmifs. It's not funny, but
+  * debian/control
+    - Standards-Version: 3.5.4.0
+    - Build-Depends against xlibs-dev, debhelper (>= 3.0.0) (Closes: #92681).
+    - Minor modifications to the description.
+  * debian/rules
+    - Add DEB_BUILD_OPTIONS support.
+    - Clean up a bit, add the install target.
+    - DH_COMPAT=3
+    - Install binary in /usr/bin.
+    - Install the new manpage.
+  * debian/README.Debian: Remove.
+  * debian/copyright
+    - New download URL.
+    - Changed copyright location.
+  * debian/menu: It's back! Thanks xtifr (Closes: #77005).
+  * debian/wmifs.1: Add manpage for wmifs. It's not funny, but
     someone else wrote it while I was working on the NMU. Thanks for
-    the effort anyway, Evelyn (closes: #93478).
-  * wmifs/Makefile:
-    + fixed things so DEB_BUILD_OPTIONS work
-    + fixed clean rule (closes: #27458)
-  * wmbifs/wmifs.c:
-    + applied patch from Barak Pearlmutter <bap@cs.unm.edu> which fixes a
-      bad 'catching up' behaviour after suspends (closes: #40682, #83003)
-    + applied patch from Chris Hanson <cph@martigny.ai.mit.edu>, fixes
+    the effort anyway, Evelyn (Closes: #93478).
+  * wmifs/Makefile
+    - Fix things so DEB_BUILD_OPTIONS work.
+    - Fix clean rule (Closes: #27458).
+  * wmbifs/wmifs.c
+    - Apply patch from Barak Pearlmutter <bap@cs.unm.edu> which fixes a
+      bad 'catching up' behaviour after suspends (Closes: #40682, #83003).
+    - Apply patch from Chris Hanson <cph@martigny.ai.mit.edu>, fixes
       a segfault when there are many network interfaces in the system
-      (closes: #39922)
-    + fixed WMIFS_VERSION
-  * These were fixed in previous uploads, closes: #41746, #67983).
+      (Closes: #39922).
+    - fixed WMIFS_VERSION
+  * These were fixed in previous uploads (Closes: #41746, #67983).
 
  -- Jordi Mallach <jordi@debian.org>  Sun,  6 May 2001 13:50:04 +0200
 
@@ -214,34 +214,34 @@ wmifs (1.3b1-5.1) unstable; urgency=low
   * Recompile against modern xpm4g package to get proper shared library
     dependency and permit this package to be installed with forthcoming
     XFree86 4.x packages, which include libXpm.
-  * debian/control: added Build-Depends
+  * debian/control: Add Build-Depends.
 
  -- Branden Robinson <branden@debian.org>  Mon, 23 Oct 2000 14:45:48 -0500
 
 wmifs (1.3b1-5) unstable; urgency=low
 
   * Remove annoying "heyho!" debugging printf that happened when one
-    does not have ppp. Fixes: #42297
+    does not have ppp (Closes: #42297).
 
  -- Ben Gertzfield <che@debian.org>  Sun,  1 Aug 1999 13:51:50 -0700
 
 wmifs (1.3b1-4) unstable; urgency=low
 
-  * Patch from Stephen Pitts to bump static buffer size from 128 to 
-    #defined size (now 512).  Fixes: #41746.
+  * Patch from Stephen Pitts to bump static buffer size from 128 to
+    #defined size (now 512) (Closes: #41746).
 
  -- Ben Gertzfield <che@debian.org>  Thu, 22 Jul 1999 07:22:39 -0700
 
 wmifs (1.3b1-3) unstable; urgency=low
 
-  * Bump MAX_STAT_DEVICES to 16. Closes: #37572
+  * Bump MAX_STAT_DEVICES to 16 (Closes: #37572).
 
  -- Ben Gertzfield <che@debian.org>  Sun,  4 Jul 1999 10:07:03 -0700
 
 wmifs (1.3b1-2) frozen unstable; urgency=low
 
   * Make it so that a make clean does not cause debian/rules clean to
-    bomb out. Fixes bug #28502.
+    bomb out (Closes: #28502).
 
  -- Ben Gertzfield <che@debian.org>  Sun, 25 Oct 1998 10:34:44 -0800
 
