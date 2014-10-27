@@ -258,6 +258,6 @@ wmifs (1.3b1-2) frozen unstable; urgency=low
 
 wmifs (1.3b1-1) unstable; urgency=low
 
-  * Initial Release.
+  * Initial release.
 
  -- Ben Gertzfield <che@debian.org>  Tue, 25 Aug 1998 13:36:10 -0700
