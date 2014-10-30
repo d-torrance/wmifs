@@ -1,3 +1,10 @@
+wmifs (1.4-2) UNRELEASED; urgency=medium
+
+  * debian/patches
+    - (hardening.patch) Harden binary by using default build flags.
+
+ -- Doug Torrance <dtorrance@monmouthcollege.edu>  Wed, 29 Oct 2014 20:21:14 -0500
+
 wmifs (1.4-1) unstable; urgency=medium
 
   * New maintainer (Closes: #672846).
