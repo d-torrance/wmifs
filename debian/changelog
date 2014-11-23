@@ -1,9 +1,11 @@
-wmifs (1.4-2) UNRELEASED; urgency=medium
+wmifs (1.4-2) unstable; urgency=medium
 
+  * debian/control
+    - Change Architecture to linux-any.
   * debian/patches
     - (hardening.patch) Harden binary by using default build flags.
 
- -- Doug Torrance <dtorrance@monmouthcollege.edu>  Wed, 29 Oct 2014 20:21:14 -0500
+ -- Doug Torrance <dtorrance@monmouthcollege.edu>  Sun, 23 Nov 2014 10:14:47 -0600
 
 wmifs (1.4-1) unstable; urgency=medium
 
