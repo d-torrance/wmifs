@@ -1,3 +1,0 @@
-- Build fails on !linux; no net/ppp_defs.h.  What to do?
-  (wmnd, a fork of wmifs, has been ported to freebsd -- maybe some hints there?)
-- Submit patches upstream.
