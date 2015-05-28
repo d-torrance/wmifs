@@ -12,12 +12,12 @@
 wmifs \- a dockable network traffic monitor
 .SH SYNOPSIS
 .B wmifs
-[-d <display name>] [-i <interface name>] [-l] [-w] [-h] [-v]
+[\-d <display name>] [\-i <interface name>] [\-l] [\-w] [\-h] [\-v]
 
 .SH DESCRIPTION
 WMiFS is a dockable applet for X11 that can monitor all your network
 interfaces. It's designed for WindowMaker's Dock and AfterStep's Wharf,
-but it's not dependant on these window managers and should work with
+but it's not dependent on these window managers and should work with
 any other.
 It can display the net load using a standard bar graph or using a waveform
 mode. It also displays the state of the interface with a group of leds.
@@ -33,8 +33,11 @@ Show summary of options.
 .B \-v
 Show version of the program.
 .TP
-.B \-d <display name>
+.B \-display <display name>
 Use an alternate X display.
+.TP
+.B \-geometry +x+y
+Set window position.
 .TP
 .B \-i <interface name>
 Interface that should come up initially when executing wmifs.  If you
@@ -54,6 +57,9 @@ Scrolling interval, in seconds (default: 5)
 .TP
 .B \-w
 Use the waveform graph instead of the classic one.
+.TP
+.B \-c <color>
+Set color.
 
 .SH FILES
 .TP

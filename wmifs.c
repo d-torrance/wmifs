@@ -1,4 +1,21 @@
-/*
+/*  WMiFS - a complete network monitoring dock.app
+    Copyright (C) 1997, 1998 Martijn Pieterse <pieterse@xs4all.nl>
+    Copyright (C) 1997, 1998 Antoine Nulle <warp@xs4all.nl>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 	Best viewed with vim5, using ts=4
 
 	This code was mainly put together by looking at the
@@ -176,34 +193,26 @@
 		* A bit of code clean-up.
 */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
-#include <string.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <ctype.h>
-
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <sys/param.h>
-#include <sys/types.h>
-#include <sys/ioctl.h>
-#include <sys/socket.h>
-#include <sys/time.h>
-
-#include <X11/Xlib.h>
-#include <X11/xpm.h>
-#include <X11/extensions/shape.h>
-
-#include <net/ppp_defs.h>
-#include <net/if_ppp.h>
-
-#include "../wmgeneral/wmgeneral.h"
-#include "../wmgeneral/misc.h"
-
-#include "wmifs-master.xpm"
-#include "wmifs-mask.xbm"
+#define _DEFAULT_SOURCE
+#include <X11/X.h>                     /* for ButtonPress, ButtonRelease, etc */
+#include <X11/Xlib.h>                  /* for XEvent, XButtonEvent, etc */
+#include <X11/xpm.h>                   /* for XpmColorSymbol, Pixel, etc */
+#include <ctype.h>                     /* for toupper */
+#include <linux/ppp_defs.h>            /* for ppp_stats, pppstat */
+#include <net/if_ppp.h>                /* for ifpppstatsreq, ifr__name, etc */
+#include <stddef.h>                    /* for size_t */
+#include <stdio.h>                     /* for fprintf, NULL, stderr, etc */
+#include <stdlib.h>                    /* for exit, atof, atoi, getenv */
+#include <string.h>                    /* for strcmp, strcpy, strlen, etc */
+#include <sys/ioctl.h>                 /* for ioctl */
+#include <sys/socket.h>                /* for socket, AF_INET */
+#include <sys/time.h>                  /* for timeval, gettimeofday */
+#include <sys/wait.h>                  /* for waitpid, WNOHANG */
+#include <time.h>                      /* for timespec, nanosleep */
+#include "wmgeneral/misc.h"            /* for execCommand */
+#include "wmgeneral/wmgeneral.h"       /* for copyXPMArea, display, etc */
+#include "wmifs-mask.xbm"              /* for wmifs_mask_bits, etc */
+#include "wmifs-master.xpm"            /* for wmifs_master_xpm */
 
 /* How often to check for new network interface, in ms */
 #define CHECK_INTERFACE_INTERVAL 5000
@@ -234,7 +243,7 @@
 #define LED_NET_TX			(5)
 #define LED_NET_POWER		(6)
 
-#define WMIFS_VERSION "1.4"
+#define WMIFS_VERSION "1.5"
 
 /* the size of the buffer read from /proc/net/ */
 #define BUFFER_SIZE 512
@@ -254,6 +263,8 @@ int		WaveForm = 0;
 int		LockMode = 0;
 int		SampleInt = DEFAULT_SAMPLE_INTERVAL;
 int		ScrollSpeed = CHECK_INTERFACE_INTERVAL;
+XpmIcon wmgen;
+char color[256];
 
   /*****************/
  /* PPP variables */
@@ -295,6 +306,7 @@ int main(int argc, char *argv[])
 
 	int		i;
 
+	color[0] = 0;
 
 	/* Parse Command Line */
 
@@ -303,8 +315,20 @@ int main(int argc, char *argv[])
 
 		if (*arg == '-') {
 			switch (arg[1]) {
+			case 'c' :
+				if (argc > i+1) {
+					strcpy(color, argv[i+1]);
+					i++;
+				}
+				break;
 			case 'd':
 				if (strcmp(arg+1, "display")) {
+					usage();
+					exit(1);
+				}
+				break;
+			case 'g':
+				if (strcmp(arg+1, "geometry")) {
 					usage();
 					exit(1);
 				}
@@ -332,8 +356,10 @@ int main(int argc, char *argv[])
 				WaveForm = 1;
 				break;
 			default:
-				usage();
-				exit(0);
+				if (strcmp(argv[i-1], "-geometry")) {
+					usage();
+					exit(0);
+				}
 				break;
 			}
 		}
@@ -341,6 +367,21 @@ int main(int argc, char *argv[])
 
 	wmifs_routine(argc, argv);
 	return 0;
+}
+
+Pixel scale_pixel(Pixel pixel, float scale)
+{
+       int red, green, blue;
+
+       red = pixel / ( 1 << 16 );
+       green = pixel % (1 << 16) / (1 << 8);
+       blue = pixel % (1 << 8);
+
+       red *= scale;
+       green *= scale;
+       blue *= scale;
+
+       return red * (1 << 16) + green * (1 << 8) + blue;
 }
 
 /*******************************************************************************\
@@ -386,6 +427,7 @@ void wmifs_routine(int argc, char **argv)
 
 	int			stat_online;
 	int			stat_current;
+	int			first_time = 1;
 
 	unsigned int	curtime;
 	unsigned int	nexttime;
@@ -429,7 +471,7 @@ void wmifs_routine(int argc, char **argv)
 #endif
 
 	/* Scan throught the .rc files */
-	parse_rcfile("/etc/wmifsrc", wmifs_keys);
+	parse_rcfile(CONF"/wmifsrc", wmifs_keys);
 
 	p = getenv("HOME");
 	if (p == NULL || *p == 0) {
@@ -440,9 +482,57 @@ void wmifs_routine(int argc, char **argv)
 	strcat(temp, "/.wmifsrc");
 	parse_rcfile(temp, wmifs_keys);
 
-	parse_rcfile("/etc/wmifsrc.fixed", wmifs_keys);
+	parse_rcfile(CONF"/wmifsrc.fixed", wmifs_keys);
 
-	openXwindow(argc, argv, wmifs_master_xpm, wmifs_mask_bits, wmifs_mask_width, wmifs_mask_height);
+       /* set user-defined colors */
+       if (color[0] != 0) {
+               Window  Root;
+               XColor col;
+               XWindowAttributes attributes;
+               int screen;
+               Pixel pixel;
+#define NUMSYMBOLS 4
+               XpmColorSymbol user_color[NUMSYMBOLS] = {
+                       {NULL, "#2081B2CAAEBA", 0}, /* + */
+                       {NULL, "#28A23CF338E3", 0}, /* O */
+                       {NULL, "#000049244103", 0}, /* @ */
+                       {NULL, "#18618A288617", 0}, /* # */
+                        };
+
+
+               /* code based on GetColor() from wmgeneral.c */
+               /* we need a temporary display to parse the color */
+               display = XOpenDisplay(NULL);
+               screen = DefaultScreen(display);
+               Root = RootWindow(display, screen);
+               XGetWindowAttributes(display, Root, &attributes);
+
+               col.pixel = 0;
+               if (!XParseColor(display, attributes.colormap, color, &col)) {
+                       fprintf(stderr, "wmtime: can't parse %s.\n", color);
+                       goto draw_window;
+               } else if (!XAllocColor(display, attributes.colormap, &col)) {
+                       fprintf(stderr, "wmtime: can't allocate %s.\n", color);
+                       goto draw_window;
+               }
+
+               pixel = col.pixel;
+
+               /* replace colors from wmtime-master.xpm */
+               user_color[0].pixel = pixel;
+               user_color[1].pixel = scale_pixel(pixel, .3);
+               user_color[2].pixel = scale_pixel(pixel, .4);
+               user_color[3].pixel = scale_pixel(pixel, .8);
+
+               wmgen.attributes.valuemask |= XpmColorSymbols;
+               wmgen.attributes.numsymbols = NUMSYMBOLS;
+               wmgen.attributes.colorsymbols = user_color;
+
+               XCloseDisplay(display);
+       }
+
+draw_window:
+	openXwindow(argc, argv, wmifs_master_xpm, (char*)wmifs_mask_bits, wmifs_mask_width, wmifs_mask_height);
 
 	/* > Button */
 	AddMouseRegion(0, 5, 5, 35, 15);
@@ -454,6 +544,8 @@ void wmifs_routine(int argc, char **argv)
 	DrawActiveIFS(stat_devices[stat_current].name);
 
 	while (1) {
+		struct timespec ts;
+
 		gettimeofday(&tv, NULL);
 		curtime = (tv.tv_sec - tv2.tv_sec) * 1000
 			+ (tv.tv_usec - tv2.tv_usec) / 1000;
@@ -462,9 +554,13 @@ void wmifs_routine(int argc, char **argv)
 
 		for (i = 0; i < stat_online; i++) {
 			get_statistics(stat_devices[i].name, &ipacket, &opacket, &istat, &ostat);
-			stat_devices[i].his[53][0] += istat - stat_devices[i].istatlast;
-			stat_devices[i].his[53][1] += ostat - stat_devices[i].ostatlast;
 
+			if (first_time) {
+				first_time = 0;
+			} else {
+				stat_devices[i].his[53][0] += istat - stat_devices[i].istatlast;
+				stat_devices[i].his[53][1] += ostat - stat_devices[i].ostatlast;
+			}
 
 			if (i == stat_current) {
 				if (!stillonline(stat_devices[i].name))
@@ -565,8 +661,9 @@ void wmifs_routine(int argc, char **argv)
 				break;
 			}
 		}
-
-		usleep(SampleInt * 1000);
+		ts.tv_sec = 0;
+		ts.tv_nsec = SampleInt * 1000000;
+		nanosleep(&ts, NULL);
 	}
 }
 
@@ -584,10 +681,9 @@ void DrawActiveIFS(char *real_name)
 	   Destinatie: 5,5
 	*/
 
-	int		i;
-	int		c;
+	size_t		i;
 	int		k;
-	int		len;
+	size_t		len;
 	char		name[256];
 
 
@@ -605,6 +701,8 @@ void DrawActiveIFS(char *real_name)
 
 	k = 5;
 	for (i = 0; name[i]; i++) {
+		int c;
+
 		if (i == strlen(name)-1 && strlen(name) <= 4 && name[strlen(name)-1] >= '0' &&
 		    name[strlen(name)-1] <= '9') {
 			copyXPMArea(61, 64, 4, 9, k, 5);
@@ -633,16 +731,17 @@ int get_statistics(char *devname, long *ip, long *op, long *is, long *os)
 
 	FILE				*fp;
 	char				temp[BUFFER_SIZE];
-	char				*p;
+	char				*p, *saveptr;
 	char				*tokens = " |:\n";
 	int					input, output;
 	int					i;
 	int					found;
-	struct ppp_stats	ppp_cur, ppp_old;
-	static int			ppp_opened;
+	struct ppp_stats	ppp_cur;
 
 
 	if (!strncmp(devname, "ppp", 3)) {
+		static int ppp_opened;
+
 		if (!ppp_opened) {
 			/* Open the ppp device. */
 			memset(&ppp_cur, 0, sizeof(ppp_cur));
@@ -650,7 +749,6 @@ int get_statistics(char *devname, long *ip, long *op, long *is, long *os)
 			if (ppp_h < 0)
 				return -1;
 			get_ppp_stats(&ppp_cur);
-			ppp_old = ppp_cur;
 			ppp_opened = 1;
 		}
 
@@ -681,7 +779,7 @@ int get_statistics(char *devname, long *ip, long *op, long *is, long *os)
 	i = 0;
 	found = -1;
 
-	p = strtok(temp, tokens);
+	p = strtok_r(temp, tokens, &saveptr);
 	do {
 		if (!(strcmp(p, "packets"))) {
 			if (input == -1)
@@ -690,13 +788,13 @@ int get_statistics(char *devname, long *ip, long *op, long *is, long *os)
 				output = i;
 		}
 		i++;
-		p = strtok(NULL, tokens);
+		p = strtok_r(NULL, tokens, &saveptr);
 	} while (input == -1 || output == -1);
 
 	while (fgets(temp, BUFFER_SIZE, fp)) {
 		if (strstr(temp, devname)) {
 			found = 0;
-			p = strtok(temp, tokens);
+			p = strtok_r(temp, tokens, &saveptr);
 			i = 0;
 			do {
 				if (i == input) {
@@ -708,7 +806,7 @@ int get_statistics(char *devname, long *ip, long *op, long *is, long *os)
 					output = -1;
 				}
 				i++;
-				p = strtok(NULL, tokens);
+				p = strtok_r(NULL, tokens, &saveptr);
 			} while (input != -1 || output != -1);
 		}
 	}
@@ -725,12 +823,13 @@ int stillonline(char *ifs)
 {
 
 	FILE	*fp;
-	char	temp[BUFFER_SIZE];
 	int		i;
 
 	i = 0;
 	fp = fopen("/proc/net/route", "r");
 	if (fp) {
+		char temp[BUFFER_SIZE];
+
 		while (fgets(temp, BUFFER_SIZE, fp)) {
 			if (strstr(temp, ifs)) {
 				i = 1; /* Line is alive */
@@ -750,12 +849,9 @@ int checknetdevs(void)
 {
 
 	FILE	*fd;
-	char	temp[BUFFER_SIZE];
-	char	*p;
 	int		i = 0, j;
 	int		k;
 	int		devsfound = 0;
-	char	*tokens = " :\t\n";
 	char	foundbuffer[MAX_STAT_DEVICES][8];
 
 	for (i = 0; i < MAX_STAT_DEVICES; i++)
@@ -765,6 +861,8 @@ int checknetdevs(void)
 
 	fd = fopen("/proc/net/dev", "r");
 	if (fd) {
+		char temp[BUFFER_SIZE];
+
 		/* Skip the first 2 lines */
 		if (!fgets(temp, BUFFER_SIZE, fd)) {
 			fclose(fd);
@@ -775,7 +873,10 @@ int checknetdevs(void)
 			return -1;
 		}
 		while (fgets(temp, BUFFER_SIZE, fd)) {
-			p = strtok(temp, tokens);
+			char *p, *saveptr;
+			char *tokens = " :\t\n";
+
+			p = strtok_r(temp, tokens, &saveptr);
 			if (p == NULL) {
 					printf("Barfed on: %s", temp);
 					break;
@@ -869,7 +970,7 @@ void DrawStats(int *his, int num, int size, int x_left, int y_bottom)
 	int		pixels_per_byte;
 	int		j, k;
 	int		*p;
-	int		p0, p1, p2, p3;
+	int		p2, p3;
 
 	pixels_per_byte = size;
 	p = his;
@@ -883,6 +984,8 @@ void DrawStats(int *his, int num, int size, int x_left, int y_bottom)
 	p = his;
 
 	for (k = 0; k < num; k++) {
+		int p0, p1;
+
 		p0 = p[0];
 		p1 = p[1];
 
@@ -926,14 +1029,16 @@ void usage(void)
 
 	fprintf(stderr, "\nwmifs - programming: tijno, (de)bugging & design: warpstah, webhosting: bobby\n\n");
 	fprintf(stderr, "usage:\n");
-	fprintf(stderr, "\t-d <display name>\n");
-	fprintf(stderr, "\t-h\tthis help screen\n");
+	fprintf(stderr, "\t-c <color>\t\tset color\n");
+	fprintf(stderr, "\t-display <display name>\tset display\n");
+	fprintf(stderr, "\t-geometry +x+y\t\tset window position\n");
+	fprintf(stderr, "\t-h\t\t\tthis help screen\n");
 	fprintf(stderr, "\t-i <interface name>\tdefault (as it appears in /proc/net/route)\n");
-	fprintf(stderr, "\t-I <interval>\tsampling interval, in seconds (default: 0.05)\n");
-	fprintf(stderr, "\t-l\tstarts in lock mode\n");
-	fprintf(stderr, "\t-s <interval>\tscrolling interval, in seconds (default: 5)\n");
-	fprintf(stderr, "\t-v\tprint the version number\n");
-	fprintf(stderr, "\t-w\twaveform load\n");
+	fprintf(stderr, "\t-I <interval>\t\tsampling interval, in seconds (default: 0.05)\n");
+	fprintf(stderr, "\t-l\t\t\tstarts in lock mode\n");
+	fprintf(stderr, "\t-s <interval>\t\tscrolling interval, in seconds (default: 5)\n");
+	fprintf(stderr, "\t-v\t\t\tprint the version number\n");
+	fprintf(stderr, "\t-w\t\t\twaveform load\n");
 	fprintf(stderr, "\n");
 }
 
@@ -958,12 +1063,13 @@ void get_ppp_stats(struct ppp_stats *cur)
 
 	memset(&req, 0, sizeof(req));
 
-	req.stats_ptr = (caddr_t) &req.stats;
+	req.stats_ptr = (void *) &req.stats;
 
 	sprintf(req.ifr__name, "ppp%d", PPP_UNIT);
 
-	if (ioctl(ppp_h, SIOCGPPPSTATS, &req) < 0)
+	if (ioctl(ppp_h, SIOCGPPPSTATS, &req) < 0) {
 		/* fprintf(stderr, "heyho!\n") */;
+	}
 	*cur = req.stats;
 }
 
