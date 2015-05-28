@@ -1,13 +1,17 @@
-wmifs (1.5-1) UNRELEASED; urgency=medium
+wmifs (1.5-1) unstable; urgency=medium
 
   * New upstream release.
+    - Includes new version of wmgeneral library which builds using gcc5
+      (Closes: #778170).
   * debian/patches
     - Remove directory; patches applied upstream.
   * debian/rules
     - Split command line options for newer versions of rename in
       get-orig-source target.
+    - Remove --souredirectory option; source now in top directory.
+    - Add override_dh_auto_build target to pass CFLAGS from dpkg-buildflags.
 
- -- Doug Torrance <dtorrance@monmouthcollege.edu>  Wed, 27 May 2015 23:27:20 -0500
+ -- Doug Torrance <dtorrance@monmouthcollege.edu>  Thu, 28 May 2015 06:49:27 -0500
 
 wmifs (1.4-2) unstable; urgency=medium
 
