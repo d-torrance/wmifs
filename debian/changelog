@@ -1,3 +1,14 @@
+wmifs (1.5-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+  * debian/patches
+    - Remove directory; patches applied upstream.
+  * debian/rules
+    - Split command line options for newer versions of rename in
+      get-orig-source target.
+
+ -- Doug Torrance <dtorrance@monmouthcollege.edu>  Wed, 27 May 2015 23:27:20 -0500
+
 wmifs (1.4-2) unstable; urgency=medium
 
   * debian/control
