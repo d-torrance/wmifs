@@ -9,6 +9,6 @@ override_dh_auto_install:
 get-orig-source:
 	uscan --verbose --force-download --no-symlink
 	@if test -e ../wmifs-*.download ; then \
-		rename -fv "s/wmifs-(.+)\.download/wmifs_\1\.orig\.tar\.gz/" \
+		rename -f -v "s/wmifs-(.+)\.download/wmifs_\1\.orig\.tar\.gz/" \
 			../wmifs-*.download; \
 	fi
